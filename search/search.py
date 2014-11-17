@@ -118,14 +118,14 @@ def breadthFirstSearch(problem):
     fringe.push(((start_state, None, 0), []))
     return generic_loop_search(problem,fringe)
 
+
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
-    fringe = util.PriorityQueueWithFunction(lambda state: state[2])
+    fringe = util.PriorityQueueWithFunction(lambda state: state[0][2])
     start_state = problem.getStartState()
-    fringe.push((start_state, None, 0))
-    visited = set()
-    result = genericSearch(problem, fringe, visited)
-    return result[1][1:]    #returns everything but the first move 'None'
+    fringe.push(((start_state, None, 0), []))
+
+    return generic_loop_search(problem, fringe)    #returns everything but the first move 'None'
 
 
 def nullHeuristic(state, problem=None):
@@ -134,6 +134,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
