@@ -67,6 +67,32 @@ def tinyMazeSearch(problem):
   w = Directions.WEST
   return  [s,s,w,s,w,w,s,w]
 
+def genericSearch(start_state,fringe,intMax=99999):
+    print('///////////////')
+    print(start_state)
+    print('///////////////')
+    if start_state.isGoalState():
+        return [True, start_state.stepCost, [start_state.action]]
+
+    #successors = problem.getSuccessors()
+    successors=[1, 2]#change back
+    for child in successors:
+        fringe.push(child)
+    if successors.__len__() == 0:
+        return [False, 99999, []]
+    while not fringe.isEmpty():
+        currentNode = fringe.pop()
+        result = genericSearch(currentNode,fringe)
+        if result[0] == True:
+            result[1] += currentNode.stepCost
+            result[2].insert(0, currentNode.action)
+            return result
+    return [False,99999,[]]#check if needed
+
+
+
+
+
 def depthFirstSearch(problem):
   """
   Search the deepest nodes in the search tree first [p 85].
@@ -82,7 +108,9 @@ def depthFirstSearch(problem):
   print("Start's successors:", problem.getSuccessors(problem.getStartState()))
   """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  fringe = util.Stack()
+  result=genericSearch(problem.getStartState, fringe)
+  return result[2]#list of moves
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
