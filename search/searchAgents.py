@@ -258,76 +258,82 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 
 class CornersProblem(search.SearchProblem):
-  """
-  This search problem finds paths through all four corners of a layout.
+    """
+    This search problem finds paths through all four corners of a layout.
 
-  You must select a suitable state space and successor function
-  """
+    You must select a suitable state space and successor function
+    """
   
-  def __init__(self, startingGameState):
-    """
-    Stores the walls, pacman's starting position and corners.
-    """
-    self.walls = startingGameState.getWalls()
-    self.startingPosition = startingGameState.getPacmanPosition()
-    top, right = self.walls.height-2, self.walls.width-2 
-    self.corners = ((1,1), (1,top), (right, 1), (right, top))
-    for corner in self.corners:
-      if not startingGameState.hasFood(*corner):
-        print('Warning: no food in corner ' + str(corner))
-    self._expanded = 0 # Number of search nodes expanded
+    def __init__(self, startingGameState):
+        """
+        Stores the walls, pacman's starting position and corners.
+        """
+        self.walls = startingGameState.getWalls()
 
-    self.visited = {c: 0 for c in self.corners}
-    
-  def getStartState(self):
-    "Returns the start state (in your state space, not the full Pacman state space)"
-    return self.startingPosition
-    
-  def isGoalState(self, state):
-    "Returns whether this search state is a goal state of the problem"
-    if self.corners.__contains__(state):
-        self.visited[state] = 1
+        self.startingPosition = startingGameState.getPacmanPosition()
+        top, right = self.walls.height-2, self.walls.width-2
+        self.corners = ((1,1), (1,top), (right, 1), (right, top))
 
-    return sum(self.visited.items()) == 4
-       
-  def getSuccessors(self, state):
-    """
-    Returns successor states, the actions they require, and a cost of 1.
-    
-     As noted in search.py:
-         For a given state, this should return a list of triples, 
-     (successor, action, stepCost), where 'successor' is a 
-     successor to the current state, 'action' is the action
-     required to get there, and 'stepCost' is the incremental 
-     cost of expanding to that successor
-    """
-    
-    successors = []
-    for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-        x,y = state
-        dx, dy = Actions.directionToVector(action)
-        nextx, nexty = int(x + dx), int(y + dy)
-        if not self.walls[nextx][nexty]:
-            nextState = (nextx, nexty)
-            successors.append((nextState, action, 1))
+        self.start = (startingGameState.getPacmanPosition(), {c: 0 for c in self.corners})
 
-    "*** YOUR CODE HERE ***"
-      
-    self._expanded += 1
-    return successors
+        for corner in self.corners:
+            if not startingGameState.hasFood(*corner):
+                print('Warning: no food in corner ' + str(corner))
 
-  def getCostOfActions(self, actions):
-    """
-    Returns the cost of a particular sequence of actions.  If those actions
-    include an illegal move, return 999999.  This is implemented for you.
-    """
-    if actions == None: return 999999
-    x,y= self.startingPosition
-    for action in actions:
-      dx, dy = Actions.directionToVector(action)
-      x, y = int(x + dx), int(y + dy)
-      if self.walls[x][y]: return 999999
-    return len(actions)
+        self._expanded = 0  # Number of search nodes expanded
+    
+    def getStartState(self):
+        "Returns the start state (in your state space, not the full Pacman state space)"
+        return self.startingPosition
+    
+    def isGoalState(self, state):
+        "Returns whether this search state is a goal state of the problem"
+        return sum(state[1].values()) == 4
+
+    def getSuccessors(self, state):
+        """
+        Returns successor states, the actions they require, and a cost of 1.
+
+         As noted in search.py:
+             For a given state, this should return a list of triples,
+         (successor, action, stepCost), where 'successor' is a
+         successor to the current state, 'action' is the action
+         required to get there, and 'stepCost' is the incremental
+         cost of expanding to that successor
+        """
+        successors = []
+
+        for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+            x,y = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextCorners = state[1].copy()
+                if (nextx, nexty) in nextCorners:
+                    nextCorners[(nextx, nexty)] = 1
+                nextState = ((nextx, nexty), nextCorners)
+                successors.append((nextState, action, 1))
+
+        "*** YOUR CODE HERE ***"
+
+        self._expanded += 1
+        return successors
+
+    def getCostOfActions(self, actions):
+        """
+        Returns the cost of a particular sequence of actions.  If those actions
+        include an illegal move, return 999999.  This is implemented for you.
+        """
+        if actions is None:
+            return 999999
+
+        x, y = self.startingPosition
+        for action in actions:
+            dx, dy = Actions.directionToVector(action)
+            x, y = int(x + dx), int(y + dy)
+            if self.walls[x][y]:
+                return 999999
+        return len(actions)
 
 
 def cornersHeuristic(state, problem):
@@ -356,55 +362,57 @@ class AStarCornersAgent(SearchAgent):
     self.searchFunction = lambda prob: search.aStarSearch(prob, cornersHeuristic)
     self.searchType = CornersProblem
 
+
 class FoodSearchProblem:
-  """
-  A search problem associated with finding the a path that collects all of the 
-  food (dots) in a Pacman game.
-  
-  A search state in this problem is a tuple ( pacmanPosition, foodGrid ) where
-    pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
-    foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food 
-  """
-  def __init__(self, startingGameState):
-    self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
-    self.walls = startingGameState.getWalls()
-    self.startingGameState = startingGameState
-    self._expanded = 0
-    self.heuristicInfo = {} # A dictionary for the heuristic to store information
-      
-  def getStartState(self):
-    return self.start
-  
-  def isGoalState(self, state):
-    return state[1].count() == 0
+    """
+    A search problem associated with finding the a path that collects all of the
+    food (dots) in a Pacman game.
 
-  def getSuccessors(self, state):
-    "Returns successor states, the actions they require, and a cost of 1."
-    successors = []
-    self._expanded += 1
-    for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-      x,y = state[0]
-      dx, dy = Actions.directionToVector(direction)
-      nextx, nexty = int(x + dx), int(y + dy)
-      if not self.walls[nextx][nexty]:
-        nextFood = state[1].copy()
-        nextFood[nextx][nexty] = False
-        successors.append( ( ((nextx, nexty), nextFood), direction, 1) )
-    return successors
+    A search state in this problem is a tuple ( pacmanPosition, foodGrid ) where
+      pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
+      foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
+    """
+    def __init__(self, startingGameState):
+        self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
+        self.walls = startingGameState.getWalls()
+        self.startingGameState = startingGameState
+        self._expanded = 0
+        self.heuristicInfo = {}  # A dictionary for the heuristic to store information
 
-  def getCostOfActions(self, actions):
-    """Returns the cost of a particular sequence of actions.  If those actions
-    include an illegal move, return 999999"""
-    x,y= self.getStartState()[0]
-    cost = 0
-    for action in actions:
-      # figure out the next state and see whether it's legal
-      dx, dy = Actions.directionToVector(action)
-      x, y = int(x + dx), int(y + dy)
-      if self.walls[x][y]:
-        return 999999
-      cost += 1
-    return cost
+    def getStartState(self):
+        return self.start
+
+    def isGoalState(self, state):
+        return state[1].count() == 0
+
+    def getSuccessors(self, state):
+        "Returns successor states, the actions they require, and a cost of 1."
+        successors = []
+        self._expanded += 1
+        for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+            x, y = state[0]
+            dx, dy = Actions.directionToVector(direction)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextFood = state[1].copy()
+                nextFood[nextx][nexty] = False
+                successors.append((((nextx, nexty), nextFood), direction, 1))
+        return successors
+
+    def getCostOfActions(self, actions):
+        """Returns the cost of a particular sequence of actions.  If those actions
+        include an illegal move, return 999999"""
+        x,y= self.getStartState()[0]
+        cost = 0
+        for action in actions:
+            # figure out the next state and see whether it's legal
+            dx, dy = Actions.directionToVector(action)
+            x, y = int(x + dx), int(y + dy)
+            if self.walls[x][y]:
+                return 999999
+            cost += 1
+        return cost
+
 
 class AStarFoodSearchAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
