@@ -140,11 +140,13 @@ def nullHeuristic(state, problem=None):
 
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-  "Search the node that has the lowest combined cost and heuristic first."
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
-    
-  
+    "Search the node that has the lowest combined cost and heuristic first."
+    fringe = util.PriorityQueueWithFunction(lambda state: heuristic(state[0][0], problem) + len(state[1]))
+    start_state = problem.getStartState()
+    fringe.push(((start_state, None, 0), []))
+    return generic_loop_search(problem, fringe)
+
+
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
