@@ -68,8 +68,6 @@ def tinyMazeSearch(problem):
   return  [s,s,w,s,w,w,s,w]
 
 
-
-
 def generic_loop_search(problem, fringe):
     visited = set()
     while(True):
@@ -90,10 +88,6 @@ def generic_loop_search(problem, fringe):
                 new_list = list(action_list)
                 new_list.append(suc[1])
                 fringe.push((suc, new_list))
-
-
-
-
 
 
 def depthFirstSearch(problem):
@@ -124,17 +118,23 @@ def breadthFirstSearch(problem):
     fringe.push(((start_state, None, 0), []))
     return generic_loop_search(problem,fringe)
 
+
 def uniformCostSearch(problem):
-  "Search the node of least total cost first. "
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+    "Search the node of least total cost first. "
+    fringe = util.PriorityQueueWithFunction(lambda state: state[0][2])
+    start_state = problem.getStartState()
+    fringe.push(((start_state, None, 0), []))
+
+    return generic_loop_search(problem, fringe)    #returns everything but the first move 'None'
+
 
 def nullHeuristic(state, problem=None):
-  """
-  A heuristic function estimates the cost from the current state to the nearest
-  goal in the provided SearchProblem.  This heuristic is trivial.
-  """
-  return 0
+    """
+    A heuristic function estimates the cost from the current state to the nearest
+    goal in the provided SearchProblem.  This heuristic is trivial.
+    """
+    return 0
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
