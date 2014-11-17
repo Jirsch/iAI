@@ -68,46 +68,76 @@ def tinyMazeSearch(problem):
   return  [s,s,w,s,w,w,s,w]
 
 
-def genericSearch(problem, fringe):
+# def genericSearch(problem, fringe):
+#
+#     fringe.push((problem.getStartState(), None, 0))
+#     explored = set()
+#
+#     while not fringe.isEmpty():
+#         move = fringe.pop()
+#         if move[0] in explored:
+#             continue
+#
+#         if problem.isGoalState(move[0]):
+#             return True, [move[1]]
+#
+#         explored.add(move[0])
+#         successors = problem.getSuccessors(move[0])
+#         for child in successors:
+#             fringe.push(child)
+#
+#     return
+#
+#
+#
+#     if fringe.isEmpty():
+#         return False, []
+#
+#     step = fringe.pop()
+#     curr_state = step[0]
+#
+#     if problem.isGoalState(curr_state):
+#         return True, [step[1]]
+#
+#     successors = problem.getSuccessors(curr_state)
+#     for child in successors:
+#         fringe.push(child)
+#
+#     for i in range(1, len(successors)):
+#
+#         result = genericSearch(problem, fringe)
+#         if result[0]:
+#             return True, result[1].insert(0, step[1])
 
-    fringe.push((problem.getStartState(), None, 0))
-    explored = set()
-
-    while not fringe.isEmpty():
-        move = fringe.pop()
-        if move[0] in explored:
-            continue
-
-        if problem.isGoalState(move[0]):
-            return True, [move[1]]
-
-        explored.add(move[0])
-        successors = problem.getSuccessors(move[0])
-        for child in successors:
-            fringe.push(child)
-
-    return
-
-
+def genericSearch(problem, fringe, visited):
 
     if fringe.isEmpty():
         return False, []
 
-    step = fringe.pop()
-    curr_state = step[0]
+    moveTo = fringe.pop()
 
-    if problem.isGoalState(curr_state):
-        return True, [step[1]]
+    if visited.__contains__(moveTo[0]):
+        return False, []
 
-    successors = problem.getSuccessors(curr_state)
-    for child in successors:
-        fringe.push(child)
+    if problem.isGoalState(moveTo[0]):
+        return True, [moveTo[1]]
 
-    for i in range(1, len(successors)):
+    suc = problem.getSuccessors(moveTo[0])
 
-        result = genericSearch(problem, fringe)
+    for child in suc:
+            fringe.push(child)
+
+    visited.add(moveTo[0])
+
+    for i in range(0, len(suc)):
+        result = genericSearch(problem, fringe, visited)
         if result[0]:
-            return True, result[1].insert(0, step[1])
+            result[1].insert(0, moveTo[1])
+            return result
+
+    return False, []
+
+
 
 
 def depthFirstSearch(problem):
@@ -124,14 +154,12 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-
-    "*** YOUR CODE HERE ***"
     fringe = util.Stack()
     start_state = problem.getStartState()
     fringe.push((start_state, None, 0))
-
-    result = genericSearch(problem, fringe)
-    return result[1][1:]
+    visited = set()
+    result = genericSearch(problem, fringe, visited)
+    return result[1][1:]    #returns everything but the first move 'None'
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
