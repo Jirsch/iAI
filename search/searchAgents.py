@@ -272,9 +272,9 @@ class CornersProblem(search.SearchProblem):
 
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
-        self.corners = ((1,1), (1,top), (right, 1), (right, top))
+        self.corners = ((1, 1), (1, top), (right, 1), (right, top))
 
-        self.start = (startingGameState.getPacmanPosition(), {c: 0 for c in self.corners})
+        self.start = (startingGameState.getPacmanPosition(), tuple(c for c in self.corners))
 
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
@@ -284,11 +284,11 @@ class CornersProblem(search.SearchProblem):
     
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
-        return self.startingPosition
+        return self.start
     
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
-        return sum(state[1].values()) == 4
+        return len(state[1]) == 0
 
     def getSuccessors(self, state):
         """
@@ -304,15 +304,18 @@ class CornersProblem(search.SearchProblem):
         successors = []
 
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            x,y = state
+            x, y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
-                nextCorners = state[1].copy()
-                if (nextx, nexty) in nextCorners:
-                    nextCorners[(nextx, nexty)] = 1
-                nextState = ((nextx, nexty), nextCorners)
-                successors.append((nextState, action, 1))
+                if (nextx, nexty) in state[1]:
+                    idx = state[1].index((nextx, nexty))
+                    next_corners = state[1][:idx]+state[1][idx+1:]
+                    #next_corners = tuple((c, d) for (c, d) in state[1] and (c, d) != (nextx, nexty))
+                else:
+                    next_corners = state[1]
+                next_state = ((nextx, nexty), next_corners)
+                successors.append((next_state, action, 1))
 
         "*** YOUR CODE HERE ***"
 
