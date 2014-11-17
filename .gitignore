@@ -1,6 +1,6 @@
 **/*.iml
 **/.idea/
 **/.iws
-__pycache__/
-*.py[cod]
+**/__pycache__/
+**/*.py[cod]
 search/lior-expirament.py

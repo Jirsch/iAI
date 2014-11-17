@@ -67,50 +67,71 @@ def tinyMazeSearch(problem):
   w = Directions.WEST
   return  [s,s,w,s,w,w,s,w]
 
-def genericSearch(start_state,fringe,intMax=99999):
-    print('///////////////')
-    print(start_state)
-    print('///////////////')
-    if start_state.isGoalState():
-        return [True, start_state.stepCost, [start_state.action]]
 
-    #successors = problem.getSuccessors()
-    successors=[1, 2]#change back
+def genericSearch(problem, fringe):
+
+    fringe.push((problem.getStartState(), None, 0))
+    explored = set()
+
+    while not fringe.isEmpty():
+        move = fringe.pop()
+        if move[0] in explored:
+            continue
+
+        if problem.isGoalState(move[0]):
+            return True, [move[1]]
+
+        explored.add(move[0])
+        successors = problem.getSuccessors(move[0])
+        for child in successors:
+            fringe.push(child)
+
+    return
+
+
+
+    if fringe.isEmpty():
+        return False, []
+
+    step = fringe.pop()
+    curr_state = step[0]
+
+    if problem.isGoalState(curr_state):
+        return True, [step[1]]
+
+    successors = problem.getSuccessors(curr_state)
     for child in successors:
         fringe.push(child)
-    if successors.__len__() == 0:
-        return [False, 99999, []]
-    while not fringe.isEmpty():
-        currentNode = fringe.pop()
-        result = genericSearch(currentNode,fringe)
-        if result[0] == True:
-            result[1] += currentNode.stepCost
-            result[2].insert(0, currentNode.action)
-            return result
-    return [False,99999,[]]#check if needed
 
+    for i in range(1, len(successors)):
 
-
+        result = genericSearch(problem, fringe)
+        if result[0]:
+            return True, result[1].insert(0, step[1])
 
 
 def depthFirstSearch(problem):
-  """
-  Search the deepest nodes in the search tree first [p 85].
-  
-  Your search algorithm needs to return a list of actions that reaches
-  the goal.  Make sure to implement a graph search algorithm [Fig. 3.7].
-  
-  To get started, you might want to try some of these simple commands to
-  understand the search problem that is being passed in:
-  
-  print("Start:", problem.getStartState())
-  print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-  print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-  """
-  "*** YOUR CODE HERE ***"
-  fringe = util.Stack()
-  result=genericSearch(problem.getStartState, fringe)
-  return result[2]#list of moves
+    """
+    Search the deepest nodes in the search tree first [p 85].
+
+    Your search algorithm needs to return a list of actions that reaches
+    the goal.  Make sure to implement a graph search algorithm [Fig. 3.7].
+
+    To get started, you might want to try some of these simple commands to
+    understand the search problem that is being passed in:
+
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    """
+
+    "*** YOUR CODE HERE ***"
+    fringe = util.Stack()
+    start_state = problem.getStartState()
+    fringe.push((start_state, None, 0))
+
+    result = genericSearch(problem, fringe)
+    return result[1][1:]
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
