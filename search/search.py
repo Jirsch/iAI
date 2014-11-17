@@ -70,6 +70,8 @@ def tinyMazeSearch(problem):
 
 def generic_loop_search(problem, fringe):
     visited = set()
+    fringed = set()
+
     while(True):
         if fringe.isEmpty():
             return []   #there is no solution
@@ -83,10 +85,11 @@ def generic_loop_search(problem, fringe):
         successors = problem.getSuccessors(moveTo[0][0])
 
         for suc in successors:
-            if suc[0] not in visited:
+            if suc[0] not in visited and suc[0] not in fringed:
 
                 new_list = list(action_list)
                 new_list.append(suc[1])
+                fringed.add(suc[0])
                 fringe.push((suc, new_list))
 
 
