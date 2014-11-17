@@ -124,7 +124,7 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
-    fringe = util.PriorityQueueWithFunction(lambda state: state[0][2])
+    fringe = util.PriorityQueueWithFunction(lambda state: len(state[1]))
     start_state = problem.getStartState()
     fringe.push(((start_state, None, 0), []))
 

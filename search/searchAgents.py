@@ -365,17 +365,12 @@ def cornersHeuristic(state, problem):
 
     dist_to_corner = []
     for corner in state[1]:
-        to_x, to_y = corner
-        from_x, from_y = state[0]
-        distance = abs(to_x-from_x) + abs(to_y-from_y)
-        dist_to_corner.append(distance)
+        dist = util.manhattanDistance(corner, state[0])
+        dist_to_corner.append(dist)
 
-    corner_to_corner=0
-    for i in range(0,len(state[1])-1):
-        to_x, to_y = state[1][i+1]
-        from_x, from_y = state[1][i]
-        distance = abs(to_x-from_x) + abs(to_y-from_y)
-        corner_to_corner += distance
+    corner_to_corner = 0
+    for i in range(0, len(state[1])-1):
+        corner_to_corner += mazeDistance(state[1][i], state[1][i+1])
 
     return corner_to_corner + min(dist_to_corner)
 
