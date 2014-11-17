@@ -319,7 +319,6 @@ class CornersProblem(search.SearchProblem):
                 if (nextx, nexty) in state[1]:
                     idx = state[1].index((nextx, nexty))
                     next_corners = state[1][:idx]+state[1][idx+1:]
-                    #next_corners = tuple((c, d) for (c, d) in state[1] and (c, d) != (nextx, nexty))
                 else:
                     next_corners = state[1]
                 next_state = ((nextx, nexty), next_corners)
