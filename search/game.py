@@ -162,6 +162,7 @@ class Grid:
     self.width = width
     self.height = height
     self.data = [[initialValue for y in range(height)] for x in range(width)]
+    self.__class__.__lt__ =  lambda x, y:  (True)
     if bitRepresentation:
       self._unpackBits(bitRepresentation)
 

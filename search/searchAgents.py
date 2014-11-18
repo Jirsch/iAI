@@ -363,22 +363,29 @@ def cornersHeuristic(state, problem):
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
+    graph={}
+
     dist_to_corner = []
     for corner in state[1]:
-        to_x, to_y = corner
-        from_x, from_y = state[0]
-        distance = abs(to_x-from_x) + abs(to_y-from_y)
-        dist_to_corner.append(distance)
+        dist = util.manhattanDistance(corner, state[0])
+        dist_to_corner.append(dist)
+        graph[-1]
 
-    corner_to_corner=0
-    for i in range(0,len(state[1])-1):
-        to_x, to_y = state[1][i+1]
-        from_x, from_y = state[1][i]
-        distance = abs(to_x-from_x) + abs(to_y-from_y)
-        corner_to_corner += distance
+    if len(dist_to_corner) == 0:
+        dist_to_corner.append(0)
+
+    corner_to_corner = 0
+    # for i in range(0, len(state[1])-1):
+    #     corner_to_corner += util.manhattanDistance(state[1][i], state[1][i+1])
+    if len(state[1]) > 0:
+        for i in range(0, len(state[1])-1):
+            graph[-1][i] = util.manhattanDistance(state[0], state[1][i])
+            for j in range(i+1, len(state[1])):
+                graph[i][j] = util.manhattanDistance(state[1][j], state[1][i])
+                graph[j][i] = util.manhattanDistance(state[1][j], state[1][i])
+
 
     return corner_to_corner + min(dist_to_corner)
-
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
