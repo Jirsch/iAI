@@ -360,32 +360,36 @@ def cornersHeuristic(state, problem):
     it should be admissible.  (You need not worry about consistency for
     this heuristic to receive full credit.)
     """
-    corners = problem.corners  # These are the corner coordinates
-    walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    graph={}
+    remaining_corners = [c for c in state[1]]
 
-    dist_to_corner = []
-    for corner in state[1]:
-        dist = util.manhattanDistance(corner, state[0])
-        dist_to_corner.append(dist)
-        graph[-1]
+    current_pos = state[0]
+    cost = 0
+    for i in range(len(state[1])):
+        idx = nearest_goal(current_pos, remaining_corners)
 
-    if len(dist_to_corner) == 0:
-        dist_to_corner.append(0)
+        cost += util.manhattanDistance(current_pos, remaining_corners[idx])
+        current_pos = remaining_corners[idx]
+        remaining_corners.remove(current_pos)
 
-    corner_to_corner = 0
-    # for i in range(0, len(state[1])-1):
-    #     corner_to_corner += util.manhattanDistance(state[1][i], state[1][i+1])
-    if len(state[1]) > 0:
-        for i in range(0, len(state[1])-1):
-            graph[-1][i] = util.manhattanDistance(state[0], state[1][i])
-            for j in range(i+1, len(state[1])):
-                graph[i][j] = util.manhattanDistance(state[1][j], state[1][i])
-                graph[j][i] = util.manhattanDistance(state[1][j], state[1][i])
+    return cost
 
 
-    return corner_to_corner + min(dist_to_corner)
+def nearest_goal(curr_pos,goals):
+    if len(goals) == 0:
+        return 0
+
+    idx = 0
+    result = util.manhattanDistance(curr_pos,goals[0])
+
+    for i in range(1, len(goals)):
+        dist = util.manhattanDistance(curr_pos, goals[i])
+        if dist < result:
+            idx = i
+            result = dist
+
+    return idx
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
