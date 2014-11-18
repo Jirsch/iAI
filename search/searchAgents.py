@@ -360,32 +360,36 @@ def cornersHeuristic(state, problem):
     it should be admissible.  (You need not worry about consistency for
     this heuristic to receive full credit.)
     """
-    corners = problem.corners  # These are the corner coordinates
-    walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    graph={}
+    remaining_corners = [c for c in state[1]]
 
-    dist_to_corner = []
-    for corner in state[1]:
-        dist = util.manhattanDistance(corner, state[0])
-        dist_to_corner.append(dist)
-        graph[-1]
+    current_pos = state[0]
+    cost = 0
+    for i in range(len(state[1])):
+        idx = nearest_goal(current_pos, remaining_corners)
 
-    if len(dist_to_corner) == 0:
-        dist_to_corner.append(0)
+        cost += util.manhattanDistance(current_pos, remaining_corners[idx])
+        current_pos = remaining_corners[idx]
+        remaining_corners.remove(current_pos)
 
-    corner_to_corner = 0
-    # for i in range(0, len(state[1])-1):
-    #     corner_to_corner += util.manhattanDistance(state[1][i], state[1][i+1])
-    if len(state[1]) > 0:
-        for i in range(0, len(state[1])-1):
-            graph[-1][i] = util.manhattanDistance(state[0], state[1][i])
-            for j in range(i+1, len(state[1])):
-                graph[i][j] = util.manhattanDistance(state[1][j], state[1][i])
-                graph[j][i] = util.manhattanDistance(state[1][j], state[1][i])
+    return cost
 
 
-    return corner_to_corner + min(dist_to_corner)
+def nearest_goal(curr_pos,goals):
+    if len(goals) == 0:
+        return 0
+
+    idx = 0
+    result = util.manhattanDistance(curr_pos,goals[0])
+
+    for i in range(1, len(goals)):
+        dist = util.manhattanDistance(curr_pos, goals[i])
+        if dist < result:
+            idx = i
+            result = dist
+
+    return idx
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -509,68 +513,67 @@ def find_min_and_remove(pos, foodList):
 
   
 class ClosestDotSearchAgent(SearchAgent):
-  "Search for all food using a sequence of searches"
-  def registerInitialState(self, state):
-    self.actions = []
-    currentState = state
-    while(currentState.getFood().count() > 0): 
-      nextPathSegment = self.findPathToClosestDot(currentState) # The missing piece
-      self.actions += nextPathSegment
-      for action in nextPathSegment: 
-        legal = currentState.getLegalActions()
-        if action not in legal: 
-          t = (str(action), str(currentState))
-          raise Exception('findPathToClosestDot returned an illegal move: %s!\n%s' % t)
-        currentState = currentState.generateSuccessor(0, action)
-    self.actionIndex = 0
-    print('Path found with cost %d.' % len(self.actions))
+    "Search for all food using a sequence of searches"
+    def registerInitialState(self, state):
+        self.actions = []
+        currentState = state
+        while(currentState.getFood().count() > 0):
+            nextPathSegment = self.findPathToClosestDot(currentState) # The missing piece
+            self.actions += nextPathSegment
+            for action in nextPathSegment:
+                legal = currentState.getLegalActions()
+                if action not in legal:
+                    t = (str(action), str(currentState))
+                    raise Exception('findPathToClosestDot returned an illegal move: %s!\n%s' % t)
+                currentState = currentState.generateSuccessor(0, action)
+        self.actionIndex = 0
+        print('Path found with cost %d.' % len(self.actions))
     
-  def findPathToClosestDot(self, gameState):
-    "Returns a path (a list of actions) to the closest dot, starting from gameState"
-    # Here are some useful elements of the startState
-    startPosition = gameState.getPacmanPosition()
-    food = gameState.getFood()
-    walls = gameState.getWalls()
-    problem = AnyFoodSearchProblem(gameState)
+    def findPathToClosestDot(self, gameState):
+        "Returns a path (a list of actions) to the closest dot, starting from gameState"
+        # Here are some useful elements of the startState
+        startPosition = gameState.getPacmanPosition()
+        food = gameState.getFood()
+        walls = gameState.getWalls()
+        problem = AnyFoodSearchProblem(gameState)
 
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-  
+        return search.breadthFirstSearch(problem)
+
+
 class AnyFoodSearchProblem(PositionSearchProblem):
-  """
+    """
     A search problem for finding a path to any food.
-    
+
     This search problem is just like the PositionSearchProblem, but
     has a different goal test, which you need to fill in below.  The
     state space and successor function do not need to be changed.
-    
+
     The class definition above, AnyFoodSearchProblem(PositionSearchProblem),
     inherits the methods of the PositionSearchProblem.
-    
-    You can use this search problem to help you fill in 
+
+    You can use this search problem to help you fill in
     the findPathToClosestDot method.
-  """
-
-  def __init__(self, gameState):
-    "Stores information from the gameState.  You don't need to change this."
-    # Store the food for later reference
-    self.food = gameState.getFood()
-
-    # Store info for the PositionSearchProblem (no need to change this)
-    self.walls = gameState.getWalls()
-    self.startState = gameState.getPacmanPosition()
-    self.costFn = lambda x: 1
-    self._visited, self._visitedlist, self._expanded = {}, [], 0
-    
-  def isGoalState(self, state):
     """
-    The state is Pacman's position. Fill this in with a goal test
-    that will complete the problem definition.
-    """
-    x,y = state
-    
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    def __init__(self, gameState):
+        "Stores information from the gameState.  You don't need to change this."
+        # Store the food for later reference
+        self.food = gameState.getFood()
+
+        # Store info for the PositionSearchProblem (no need to change this)
+        self.walls = gameState.getWalls()
+        self.startState = gameState.getPacmanPosition()
+        self.costFn = lambda x: 1
+        self._visited, self._visitedlist, self._expanded = {}, [], 0
+
+    def isGoalState(self, state):
+        """
+        The state is Pacman's position. Fill this in with a goal test
+        that will complete the problem definition.
+        """
+        x, y = state
+        return self.food[x][y]
+
 
 ##################
 # Mini-contest 1 #
