@@ -83,7 +83,7 @@ def generic_loop_search(problem, fringe):
 
         visited.add(moveTo[0][0])
         successors = problem.getSuccessors(moveTo[0][0])
-        cost_so_far = moveTo[0][2]
+        cost_so_far = moveTo[2]
 
         for suc in successors:
             if suc[0] not in visited and suc[0] not in fringed:

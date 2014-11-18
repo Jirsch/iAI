@@ -477,8 +477,36 @@ def foodHeuristic(state, problem):
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
   position, foodGrid = state
-  "*** YOUR CODE HERE ***"
-  return 0
+  foodlist = foodGrid.asList()
+
+  currentPos = (position, 0)
+  totalDistance = 0
+  while not len(foodlist) == 0:
+    currentPos = find_min_and_remove(currentPos[0], foodlist)
+    totalDistance += currentPos[1]
+
+  return totalDistance
+
+
+def find_min_and_remove(pos, foodList):
+    """
+    helper function
+    returns the node with the minumum distance from pos and its distance
+    also removes node from list
+    """
+
+    minDist = 999999
+    nodeToRemove = ()
+
+    for food in foodList:
+        dist = abs(pos[0]-food[0])+abs(pos[1]-food[1])
+        if dist < minDist:
+            minDist = dist
+            nodeToRemove = food
+
+    foodList.remove(nodeToRemove)
+    return nodeToRemove, minDist
+
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
