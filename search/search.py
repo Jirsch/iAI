@@ -83,6 +83,7 @@ def generic_loop_search(problem, fringe):
 
         visited.add(moveTo[0][0])
         successors = problem.getSuccessors(moveTo[0][0])
+        cost_so_far = moveTo[0][2]
 
         for suc in successors:
             if suc[0] not in visited and suc[0] not in fringed:
@@ -90,7 +91,7 @@ def generic_loop_search(problem, fringe):
                 new_list = list(action_list)
                 new_list.append(suc[1])
                 fringed.add(suc[0])
-                fringe.push((suc, new_list))
+                fringe.push((suc, new_list, cost_so_far+suc[2]))
 
 
 def depthFirstSearch(problem):
@@ -109,7 +110,7 @@ def depthFirstSearch(problem):
     """
     fringe = util.Stack()
     start_state = problem.getStartState()
-    fringe.push(((start_state, None, 0), []))
+    fringe.push(((start_state, None, 0), [], 0))
     return generic_loop_search(problem, fringe)
 
 
@@ -118,15 +119,15 @@ def breadthFirstSearch(problem):
 
     fringe = util.Queue()
     start_state = problem.getStartState()
-    fringe.push(((start_state, None, 0), []))
-    return generic_loop_search(problem,fringe)
+    fringe.push(((start_state, None, 0), [], 0))
+    return generic_loop_search(problem, fringe)
 
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
-    fringe = util.PriorityQueueWithFunction(lambda state: len(state[1]))
+    fringe = util.PriorityQueueWithFunction(lambda state: state[2])
     start_state = problem.getStartState()
-    fringe.push(((start_state, None, 0), []))
+    fringe.push(((start_state, None, 0), [], 0))
 
     return generic_loop_search(problem, fringe)    #returns everything but the first move 'None'
 
@@ -141,9 +142,9 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
-    fringe = util.PriorityQueueWithFunction(lambda state: heuristic(state[0][0], problem) + len(state[1]))
+    fringe = util.PriorityQueueWithFunction(lambda state: heuristic(state[0][0], problem) + state[2])
     start_state = problem.getStartState()
-    fringe.push(((start_state, None, 0), []))
+    fringe.push(((start_state, None, 0), [], 0))
     return generic_loop_search(problem, fringe)
 
 
