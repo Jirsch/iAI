@@ -38,14 +38,18 @@ class ReflexAgent(Agent):
         legalMoves = gameState.getLegalActions()
 
         # Choose one of the best actions
-        scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
+        scores = [self.evaluationFunction(gameState, action) for action in
+                  legalMoves]
         bestScore = max(scores)
-        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-        chosenIndex = random.choice(bestIndices)  # Pick randomly among the best
+        bestIndices = [index for index in range(len(scores)) if
+                       scores[index] == bestScore]
+        chosenIndex = random.choice(
+            bestIndices)  # Pick randomly among the best
 
         "Add more of your code here if you want to"
 
         return legalMoves[chosenIndex]
+
 
     def evaluationFunction(self, currentGameState, action):
         """
@@ -67,10 +71,92 @@ class ReflexAgent(Agent):
         newPos = successorGameState.getPacmanPosition()
         oldFood = currentGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        newScaredTimes = [ghostState.scaredTimer for ghostState in
+                          newGhostStates]
 
-        "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        if currentGameState.isWin() or currentGameState.isLose():
+            return currentGameState.getScore()
+
+        food_xy = currentGameState.data.food.asList()
+        food_num_left = len(food_xy)
+
+        scared = 0
+        min_ghost_dist = 999
+        for ghost in newGhostStates:
+            if min_ghost_dist > manhattan_distance(newPos,
+                                                   ghost.getPosition()) and ghost.scaredTimer != 0:
+                min_ghost_dist = manhattan_distance(newPos,
+                                                    ghost.getPosition())
+        sum = 0
+        for i in range(len(newScaredTimes)):
+            sum += newScaredTimes[i]
+        if sum == 0:
+            min_ghost_dist = -10
+
+        min_food_dist = 999
+        for food in food_xy:
+            if min_food_dist > util.manhattanDistance(newPos, food):
+                min_food_dist = util.manhattanDistance(newPos, food)
+
+        food_dist = total_distance_from_list(newPos, food_xy)
+        # food_dist = dist_from_list(newPos, food_xy)
+
+
+        stop_reduction = 0
+        if action == "Stop":
+            stop_reduction = -5
+
+        if food_dist == 0 or min_ghost_dist == 0 or successorGameState.getScore() == 0 or food_num_left == 0 or stop_reduction == 0:
+            return successorGameState.getScore()
+        score = successorGameState.getScore() \
+                + 2 / food_dist \
+                + 10 / min_ghost_dist \
+                + stop_reduction \
+                + 3 / food_num_left
+
+        print(successorGameState.getScore())
+        return score
+
+
+def manhattan_distance(position1, position2):
+    return abs(position1[0] - position2[0]) + abs(position1[1] - position2[1])
+
+
+def dist_from_list(pos, object_list):
+    "manhattern distance from pos to all other coordinates"
+    dist = 0
+    for object in object_list:
+        dist += manhattan_distance(pos, object)
+    return dist
+
+
+def total_distance_from_list(pos, object_list):
+    totalDistance = 0
+    pos = pos, 0
+    while not len(object_list) == 0:
+        pos = find_min_and_remove(pos, object_list)
+        totalDistance += pos[1]
+    return totalDistance
+
+
+def find_min_and_remove(pos, foodList):
+    """
+    helper function
+    returns the node with the minumum distance from pos and its distance
+    also removes node from list
+    """
+
+    minDist = 999999
+    nodeToRemove = ()
+
+    for food in foodList:
+      dist = abs(pos[0][0] - food[0]) + abs(pos[0][1] - food[1])
+      if dist < minDist:
+        minDist = dist
+        nodeToRemove = food
+
+    foodList.remove(nodeToRemove)
+    return nodeToRemove, minDist
 
 
 def scoreEvaluationFunction(currentGameState):
@@ -176,7 +262,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState):
         """
-        Returns the minimax action using self.depth and self.evaluationFunction
+          Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
