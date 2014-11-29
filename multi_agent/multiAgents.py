@@ -83,15 +83,15 @@ class ReflexAgent(Agent):
         scared = 0
         min_ghost_dist = 999
         for ghost in newGhostStates:
-            if min_ghost_dist > manhattan_distance(newPos,
+            if min_ghost_dist > util.manhattanDistance(newPos,
                                                    ghost.getPosition()) and ghost.scaredTimer != 0:
-                min_ghost_dist = manhattan_distance(newPos,
+                min_ghost_dist = util.manhattanDistance(newPos,
                                                     ghost.getPosition())
         sum = 0
         for i in range(len(newScaredTimes)):
             sum += newScaredTimes[i]
         if sum == 0:
-            min_ghost_dist = -10
+            min_ghost_dist = -5
 
         min_food_dist = 999
         for food in food_xy:
@@ -99,34 +99,30 @@ class ReflexAgent(Agent):
                 min_food_dist = util.manhattanDistance(newPos, food)
 
         food_dist = total_distance_from_list(newPos, food_xy)
-        # food_dist = dist_from_list(newPos, food_xy)
+        #food_dist = dist_from_list(newPos, food_xy)
 
 
         stop_reduction = 0
         if action == "Stop":
             stop_reduction = -5
 
-        if food_dist == 0 or min_ghost_dist == 0 or successorGameState.getScore() == 0 or food_num_left == 0 or stop_reduction == 0:
-            return successorGameState.getScore()
-        score = successorGameState.getScore() \
-                + 2 / food_dist \
-                + 10 / min_ghost_dist \
-                + stop_reduction \
-                + 3 / food_num_left
+        # if food_dist == 0 or min_ghost_dist == 0 or successorGameState.getScore() == 0 or food_num_left == 0 or stop_reduction == 0:
+        #     return successorGameState.getScore()
+        score = 0.7*successorGameState.getScore() \
+                - 0.5*food_dist \
+                 + 6* min_ghost_dist \
+                 - 0.3*food_num_left\
+                 + stop_reduction \
 
         print(successorGameState.getScore())
         return score
-
-
-def manhattan_distance(position1, position2):
-    return abs(position1[0] - position2[0]) + abs(position1[1] - position2[1])
 
 
 def dist_from_list(pos, object_list):
     "manhattern distance from pos to all other coordinates"
     dist = 0
     for object in object_list:
-        dist += manhattan_distance(pos, object)
+        dist += util.manhattanDistance(pos, object)
     return dist
 
 
