@@ -150,10 +150,10 @@ def find_min_and_remove(pos, foodList):
     nodeToRemove = ()
 
     for food in foodList:
-      dist = abs(pos[0][0] - food[0]) + abs(pos[0][1] - food[1])
-      if dist < minDist:
-        minDist = dist
-        nodeToRemove = food
+        dist = abs(pos[0][0] - food[0]) + abs(pos[0][1] - food[1])
+        if dist < minDist:
+            minDist = dist
+            nodeToRemove = food
 
     foodList.remove(nodeToRemove)
     return nodeToRemove, minDist
@@ -264,8 +264,42 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        action_score = self.get_action(gameState, 0, float('-inf'), float('inf'), self.depth)
+        return action_score[0]
+
+    def get_action(self, game_state, agent, alpha, beta, depth):
+        actions = game_state.getLegalActions(agent)
+        actions = [action for action in actions if action != Directions.STOP]
+
+        action_scores = []
+        for action in actions:
+            new_state = game_state.generateSuccessor(agent, action)
+
+            if new_state.isWin() or new_state.isLose():
+                score = self.evaluationFunction(new_state)
+            else:
+                if agent != game_state.getNumAgents() - 1:
+                    result = self.get_action(new_state, agent + 1, alpha, beta, depth)
+                    score = result[1]
+                else:
+                    if depth != 1:
+                        result = self.get_action(new_state, 0, alpha, beta, depth - 1)
+                        score = result[1]
+                    else:
+                        score = self.evaluationFunction(new_state)
+
+            if agent == 0:
+                alpha = max(alpha, score)
+                action_scores.append((action, alpha))
+                if alpha >= beta:
+                    return action, alpha
+            else:
+                beta = min(beta, score)
+                action_scores.append((action, beta))
+                if beta <= alpha:
+                    return action, beta
+
+        return get_agent_action(agent, action_scores)
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
