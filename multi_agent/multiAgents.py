@@ -11,6 +11,7 @@ from game import Directions
 import random, util
 
 from game import Agent
+from game import Directions
 
 
 class ReflexAgent(Agent):
@@ -213,8 +214,41 @@ class MinimaxAgent(MultiAgentSearchAgent):
           gameState.getNumAgents():
             Returns the total number of agents in the game
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        action, score = self.get_action(gameState, 0, self.depth)
+        return action
+
+    def get_action(self, game_state, agent, depth):
+        actions = game_state.getLegalActions(agent)
+        actions = [action for action in actions if action != Directions.STOP]
+
+        action_scores = []
+        for action in actions:
+            new_state = game_state.generateSuccessor(agent, action)
+
+            if new_state.isWin() or new_state.isLose():
+                action_scores.append((action, self.evaluationFunction(new_state)))
+                continue
+            if agent != game_state.getNumAgents() - 1:
+                result = self.get_action(new_state, agent + 1, depth)
+                action_scores.append((action, result[1]))
+            else:
+                if depth != 1:
+                    result = self.get_action(new_state, 0, depth - 1)
+                    action_scores.append((action, result[1]))
+                else:
+                    action_scores.append((action, self.evaluationFunction(new_state)))
+
+        return get_agent_action(agent, action_scores)
+
+
+def get_agent_action(agent, action_scores):
+    if agent == 0:
+        best_score = max(score[1] for score in action_scores)
+    else:
+        best_score = min(score[1] for score in action_scores)
+    best_actions = [action_score for action_score in action_scores if action_score[1] == best_score]
+    return best_actions[0]
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -226,8 +260,42 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        action_score = self.get_action(gameState, 0, float('-inf'), float('inf'), self.depth)
+        return action_score[0]
+
+    def get_action(self, game_state, agent, alpha, beta, depth):
+        actions = game_state.getLegalActions(agent)
+        actions = [action for action in actions if action != Directions.STOP]
+
+        action_scores = []
+        for action in actions:
+            new_state = game_state.generateSuccessor(agent, action)
+
+            if new_state.isWin() or new_state.isLose():
+                score = self.evaluationFunction(new_state)
+            else:
+                if agent != game_state.getNumAgents() - 1:
+                    result = self.get_action(new_state, agent + 1, alpha, beta, depth)
+                    score = result[1]
+                else:
+                    if depth != 1:
+                        result = self.get_action(new_state, 0, alpha, beta, depth - 1)
+                        score = result[1]
+                    else:
+                        score = self.evaluationFunction(new_state)
+
+            if agent == 0:
+                alpha = max(alpha, score)
+                action_scores.append((action, alpha))
+                if alpha >= beta:
+                    return action, alpha
+            else:
+                beta = min(beta, score)
+                action_scores.append((action, beta))
+                if beta <= alpha:
+                    return action, beta
+
+        return get_agent_action(agent, action_scores)
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
