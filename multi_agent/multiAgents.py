@@ -243,10 +243,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 else:
                     action_scores.append((action, self.evaluationFunction(new_state)))
 
-        return get_agent_action(agent, action_scores)
+        return get_minimax_action(agent, action_scores)
 
 
-def get_agent_action(agent, action_scores):
+def get_minimax_action(agent, action_scores):
     if agent == 0:
         best_score = max(score[1] for score in action_scores)
     else:
@@ -299,7 +299,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 if beta <= alpha:
                     return action, beta
 
-        return get_agent_action(agent, action_scores)
+        return get_minimax_action(agent, action_scores)
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
@@ -314,8 +314,42 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           All ghosts should be modeled as choosing uniformly at random from their
           legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        action, score = self.get_action(gameState, 0, self.depth)
+        return action
+
+    def get_action(self, game_state, agent, depth):
+        actions = game_state.getLegalActions(agent)
+        actions = [action for action in actions if action != Directions.STOP]
+
+        action_scores = []
+        for action in actions:
+            new_state = game_state.generateSuccessor(agent, action)
+
+            if new_state.isWin() or new_state.isLose():
+                action_scores.append((action, self.evaluationFunction(new_state)))
+                continue
+            if agent != game_state.getNumAgents() - 1:
+                result = self.get_action(new_state, agent + 1, depth)
+                action_scores.append((action, result[1]))
+            else:
+                if depth != 1:
+                    result = self.get_action(new_state, 0, depth - 1)
+                    action_scores.append((action, result[1]))
+                else:
+                    action_scores.append((action, self.evaluationFunction(new_state)))
+
+        return get_expected_action(agent, action_scores)
+
+
+def get_expected_action(agent, action_scores):
+    if agent == 0:
+        best_score = max(score[1] for score in action_scores)
+        best_actions = [action_score for action_score in action_scores if action_score[1] == best_score]
+    else:
+        sum_score = sum(score[1] for score in action_scores)
+        best_actions = [(Directions.STOP, sum_score/len(action_scores))]
+
+    return best_actions[0]
 
 
 def betterEvaluationFunction(currentGameState):
