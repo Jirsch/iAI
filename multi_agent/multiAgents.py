@@ -90,7 +90,7 @@ class ReflexAgent(Agent):
         for i in range(len(newScaredTimes)):
             sum += newScaredTimes[i]
         if sum == 0:
-            min_ghost_dist = -10
+            min_ghost_dist = -5
 
         min_food_dist = 999
         for food in food_xy:
@@ -98,20 +98,20 @@ class ReflexAgent(Agent):
                 min_food_dist = util.manhattanDistance(newPos, food)
 
         food_dist = total_distance_from_list(newPos, food_xy)
-        # food_dist = dist_from_list(newPos, food_xy)
+        #food_dist = dist_from_list(newPos, food_xy)
 
 
         stop_reduction = 0
         if action == "Stop":
             stop_reduction = -5
 
-        if food_dist == 0 or min_ghost_dist == 0 or successorGameState.getScore() == 0 or food_num_left == 0 or stop_reduction == 0:
-            return successorGameState.getScore()
-        score = 0.5*successorGameState.getScore() \
+        # if food_dist == 0 or min_ghost_dist == 0 or successorGameState.getScore() == 0 or food_num_left == 0 or stop_reduction == 0:
+        #     return successorGameState.getScore()
+        score = 0.7*successorGameState.getScore() \
                 - 0.5*food_dist \
-                 + 5* min_ghost_dist \
-                + stop_reduction \
-                - 0.3*food_num_left
+                 + 6* min_ghost_dist \
+                 - 0.3*food_num_left\
+                 + stop_reduction \
 
         print(successorGameState.getScore())
         return score
