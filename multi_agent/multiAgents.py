@@ -367,11 +367,11 @@ def betterEvaluationFunction(currentGameState):
 
 
 
-    total_score= 0.4*score \
-           -5*(food_left_num) \
+    total_score= 0.5*score \
+           -3*(food_left_num) \
            -0.3*(food_distance)\
            -3*(len(capsules_left))\
-           -10/(ghost_score(currentGameState))
+           -12/(ghost_score(currentGameState))
     #print (total_score)
     return total_score
 
@@ -393,7 +393,7 @@ def ghost_score(currentGameState):
             closest_ghost = util.manhattanDistance(pacman_pos, ghosts_pos[i])
 
     if closest_ghost == 9999:
-        return -20
+        return -30
     else:
         return closest_ghost
 
