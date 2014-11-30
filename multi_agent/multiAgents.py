@@ -355,11 +355,47 @@ def betterEvaluationFunction(currentGameState):
 
       DESCRIPTION: <write something here so we know what you did>
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    score = currentGameState.getScore()
+    # if currentGameState.isLose() or currentGameState.isWin:
+    #      return score
+
+    pacman_pos = currentGameState.getPacmanPosition()
+    food_list = currentGameState.getFood().asList()
+    food_left_num = currentGameState.getNumFood()
+    food_distance = dist_from_list(pacman_pos ,food_list)
+    capsules_left = currentGameState.getCapsules()
+
+
+
+    total_score= score \
+           -2*(food_left_num) \
+           -0.4*(food_distance)\
+           -1*(len(capsules_left))\
+           -13/(ghost_score(currentGameState))
+    #print (total_score)
+    return total_score
+
 
 # Abbreviation
 better = betterEvaluationFunction
+
+def ghost_score(currentGameState):
+    pacman_pos = currentGameState.getPacmanPosition()
+    ghosts_pos = currentGameState.getGhostPositions()
+    #ghosts_scared = currentGameState.getGhostStates()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in
+                          newGhostStates]
+    closest_ghost = 9999 #TODO change to other parameter?
+    for i in range(currentGameState.getNumAgents()-1):
+        if newScaredTimes[i] != 0 and closest_ghost > util.manhattanDistance(pacman_pos,ghosts_pos[i]):
+            #distance_sum += util.manhattanDistance(pacman_pos,ghosts_pos[i])
+            closest_ghost = util.manhattanDistance(pacman_pos, ghosts_pos[i])
+
+    if closest_ghost == 9999:
+        return -20
+    else:
+        return closest_ghost
 
 
 class ContestAgent(MultiAgentSearchAgent):
