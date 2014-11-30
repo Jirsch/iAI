@@ -367,11 +367,11 @@ def betterEvaluationFunction(currentGameState):
 
 
 
-    total_score= score \
-           -2*(food_left_num) \
-           -0.4*(food_distance)\
-           -1*(len(capsules_left))\
-           -13/(ghost_score(currentGameState))
+    total_score= 0.4*score \
+           -5*(food_left_num) \
+           -0.3*(food_distance)\
+           -3*(len(capsules_left))\
+           -10/(ghost_score(currentGameState))
     #print (total_score)
     return total_score
 
