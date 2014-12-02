@@ -74,56 +74,40 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in
                           newGhostStates]
 
-        if currentGameState.isWin() or currentGameState.isLose():
-            return currentGameState.getScore()
-
-        food_xy = currentGameState.data.food.asList()
+        food_xy = oldFood.asList()
         food_num_left = len(food_xy)
 
-        scared = 0
         min_ghost_dist = 999
         for ghost in newGhostStates:
             if min_ghost_dist > util.manhattanDistance(newPos,
-                                                   ghost.getPosition()) and ghost.scaredTimer != 0:
-                min_ghost_dist = util.manhattanDistance(newPos,
-                                                    ghost.getPosition())
-        sum = 0
-        for i in range(len(newScaredTimes)):
-            sum += newScaredTimes[i]
-        if sum == 0:
-            min_ghost_dist = -5
+               ghost.getPosition()) and ghost.scaredTimer != 0:
+                    min_ghost_dist = util.manhattanDistance(newPos, ghost.getPosition())
 
+        #if all the ghosts are scared, get a bonus
+        if min_ghost_dist == 999:
+            min_ghost_dist= -50
+
+        #distance to closest food pellet
         min_food_dist = 999
         for food in food_xy:
             if min_food_dist > util.manhattanDistance(newPos, food):
                 min_food_dist = util.manhattanDistance(newPos, food)
 
         food_dist = total_distance_from_list(newPos, food_xy)
-        #food_dist = dist_from_list(newPos, food_xy)
 
-
+        #this is a measure used to discourage pacman from stopping.
+        #unless it is an extreme situation, stopping would lower the score dramatically
         stop_reduction = 0
         if action == "Stop":
-            stop_reduction = -5
+            stop_reduction = -10
 
-        # if food_dist == 0 or min_ghost_dist == 0 or successorGameState.getScore() == 0 or food_num_left == 0 or stop_reduction == 0:
-        #     return successorGameState.getScore()
-        score = 0.7*successorGameState.getScore() \
-                - 0.5*food_dist \
-                 + 6* min_ghost_dist \
-                 - 0.3*food_num_left\
-                 + stop_reduction \
+        score = 0.7 * successorGameState.getScore() \
+                - 0.5 * food_dist \
+                + 6 * min_ghost_dist \
+                - 0.3 * food_num_left \
+                + stop_reduction \
 
-        print(successorGameState.getScore())
         return score
-
-
-def dist_from_list(pos, object_list):
-    "manhattern distance from pos to all other coordinates"
-    dist = 0
-    for object in object_list:
-        dist += util.manhattanDistance(pos, object)
-    return dist
 
 
 def total_distance_from_list(pos, object_list):
@@ -227,7 +211,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
             new_state = game_state.generateSuccessor(agent, action)
 
             if new_state.isWin() or new_state.isLose():
-                action_scores.append((action, self.evaluationFunction(new_state)))
+                action_scores.append(
+                    (action, self.evaluationFunction(new_state)))
                 continue
             if agent != game_state.getNumAgents() - 1:
                 result = self.get_action(new_state, agent + 1, depth)
@@ -237,7 +222,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
                     result = self.get_action(new_state, 0, depth - 1)
                     action_scores.append((action, result[1]))
                 else:
-                    action_scores.append((action, self.evaluationFunction(new_state)))
+                    action_scores.append(
+                        (action, self.evaluationFunction(new_state)))
 
         return get_minimax_action(agent, action_scores)
 
@@ -247,7 +233,8 @@ def get_minimax_action(agent, action_scores):
         best_score = max(score[1] for score in action_scores)
     else:
         best_score = min(score[1] for score in action_scores)
-    best_actions = [action_score for action_score in action_scores if action_score[1] == best_score]
+    best_actions = [action_score for action_score in action_scores if
+                    action_score[1] == best_score]
     return best_actions[0]
 
 
@@ -260,7 +247,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
-        action_score = self.get_action(gameState, 0, float('-inf'), float('inf'), self.depth)
+        action_score = self.get_action(gameState, 0, float('-inf'),
+                                       float('inf'), self.depth)
         return action_score[0]
 
     def get_action(self, game_state, agent, alpha, beta, depth):
@@ -275,11 +263,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 score = self.evaluationFunction(new_state)
             else:
                 if agent != game_state.getNumAgents() - 1:
-                    result = self.get_action(new_state, agent + 1, alpha, beta, depth)
+                    result = self.get_action(new_state, agent + 1, alpha, beta,
+                                             depth)
                     score = result[1]
                 else:
                     if depth != 1:
-                        result = self.get_action(new_state, 0, alpha, beta, depth - 1)
+                        result = self.get_action(new_state, 0, alpha, beta,
+                                                 depth - 1)
                         score = result[1]
                     else:
                         score = self.evaluationFunction(new_state)
@@ -322,7 +312,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             new_state = game_state.generateSuccessor(agent, action)
 
             if new_state.isWin() or new_state.isLose():
-                action_scores.append((action, self.evaluationFunction(new_state)))
+                action_scores.append(
+                    (action, self.evaluationFunction(new_state)))
                 continue
             if agent != game_state.getNumAgents() - 1:
                 result = self.get_action(new_state, agent + 1, depth)
@@ -332,7 +323,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                     result = self.get_action(new_state, 0, depth - 1)
                     action_scores.append((action, result[1]))
                 else:
-                    action_scores.append((action, self.evaluationFunction(new_state)))
+                    action_scores.append(
+                        (action, self.evaluationFunction(new_state)))
 
         return get_expected_action(agent, action_scores)
 
@@ -340,10 +332,11 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 def get_expected_action(agent, action_scores):
     if agent == 0:
         best_score = max(score[1] for score in action_scores)
-        best_actions = [action_score for action_score in action_scores if action_score[1] == best_score]
+        best_actions = [action_score for action_score in action_scores if
+                        action_score[1] == best_score]
     else:
         sum_score = sum(score[1] for score in action_scores)
-        best_actions = [(Directions.STOP, sum_score/len(action_scores))]
+        best_actions = [(Directions.STOP, sum_score / len(action_scores))]
 
     return best_actions[0]
 
@@ -353,43 +346,52 @@ def betterEvaluationFunction(currentGameState):
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
       evaluation function (question 5).
 
-      DESCRIPTION: <write something here so we know what you did>
+      DESCRIPTION: the function takes into account these attributes:
+            score of the state
+            number of food left
+            the sum of distances from pacman to all the food left
+            number of capsules left
+            a ghost score- calculated in a seperate function
+
+            the returned value is a linear combination of these values
     """
     score = currentGameState.getScore()
-    # if currentGameState.isLose() or currentGameState.isWin:
-    #      return score
-
     pacman_pos = currentGameState.getPacmanPosition()
     food_list = currentGameState.getFood().asList()
     food_left_num = currentGameState.getNumFood()
-    food_distance = dist_from_list(pacman_pos ,food_list)
+    food_distance = dist_from_list(pacman_pos, food_list)
     capsules_left = currentGameState.getCapsules()
 
+    total_score = 0.5 * score \
+                - 3 * food_left_num \
+                - 0.3 * food_distance \
+                - 200 * len(capsules_left) \
+                - 12 / ghost_score(currentGameState)
 
-
-    total_score= 0.5*score \
-           -3*(food_left_num) \
-           -0.3*(food_distance)\
-           -3*(len(capsules_left))\
-           -12/(ghost_score(currentGameState))
-    #print (total_score)
     return total_score
 
 
 # Abbreviation
 better = betterEvaluationFunction
 
+
 def ghost_score(currentGameState):
+    """
+    this method is used to return a value considering pacmans position
+    and the position and state of the ghosts.
+    it returns the manhatten distance to the closest ghost,
+    unless all the ghosts are scared, in which case it is given a set bonus
+    (this state is desireable so it is encouraged)
+    """
     pacman_pos = currentGameState.getPacmanPosition()
     ghosts_pos = currentGameState.getGhostPositions()
-    #ghosts_scared = currentGameState.getGhostStates()
     newGhostStates = currentGameState.getGhostStates()
     newScaredTimes = [ghostState.scaredTimer for ghostState in
-                          newGhostStates]
-    closest_ghost = 9999 #TODO change to other parameter?
-    for i in range(currentGameState.getNumAgents()-1):
-        if newScaredTimes[i] != 0 and closest_ghost > util.manhattanDistance(pacman_pos,ghosts_pos[i]):
-            #distance_sum += util.manhattanDistance(pacman_pos,ghosts_pos[i])
+                      newGhostStates]
+    closest_ghost = 9999
+    for i in range(currentGameState.getNumAgents() - 1):
+        if newScaredTimes[i] != 0 and closest_ghost > util.manhattanDistance(
+                pacman_pos, ghosts_pos[i]):
             closest_ghost = util.manhattanDistance(pacman_pos, ghosts_pos[i])
 
     if closest_ghost == 9999:
@@ -397,6 +399,12 @@ def ghost_score(currentGameState):
     else:
         return closest_ghost
 
+def dist_from_list(pos, object_list):
+    "manhattern distance from pos to all other coordinates"
+    dist = 0
+    for object in object_list:
+        dist += util.manhattanDistance(pos, object)
+    return dist
 
 class ContestAgent(MultiAgentSearchAgent):
     """
