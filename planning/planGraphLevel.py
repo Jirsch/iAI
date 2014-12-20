@@ -68,7 +68,7 @@ class PlanGraphLevel(object):
                 self.actionLayer.addAction(action)
 
 
-    def check_pre_mutex(self , action, previous_proposition_layer):
+    def check_pre_mutex(self, action, previous_proposition_layer):
         for pre1 in action.getPre():
             for pre2 in action.getPre():
                 if pre1 != pre2 and\
@@ -88,7 +88,14 @@ class PlanGraphLevel(object):
         Note that action is *not* mutex with itself
         """
         currentLayerActions = self.actionLayer.getActions()
-        "*** YOUR CODE HERE ***"
+
+        for action1 in currentLayerActions:
+                for action2 in currentLayerActions:
+                    if action1 != action2 and\
+                            mutexActions(action1, action2, previousLayerMutexProposition):
+                        self.actionLayer.addMutexActions(action1, action2)
+
+
 
     def updatePropositionLayer(self):
         """
