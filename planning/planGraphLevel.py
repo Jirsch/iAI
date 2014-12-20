@@ -112,14 +112,20 @@ class PlanGraphLevel(object):
 
         """
         currentLayerActions = self.actionLayer.getActions()
-        #TODO update the producers list!
-        add_props_dict = dict()
+        props_dict = dict()
         for action in currentLayerActions:
             for add_props in action.getAdd():
-                        
+                if add_props.getName() in props_dict:
+                    props_dict[add_props.getName] = [action]
+                else:
+                    props_dict[add_props.getName] = \
+                        props_dict[add_props.getName].append(action)
 
-
-
+        for key in props_dict:
+            prop_temp = Proposition(key)
+            prop_temp.setProcedures(props_dict[key])    #takes care of adding procedure
+            self.propositionLayer.addProposition(prop_temp)
+        #notice there is no mention of mutexes. is this ok?
 
 
     def updateMutexProposition(self):
