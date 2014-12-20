@@ -112,7 +112,15 @@ class PlanGraphLevel(object):
 
         """
         currentLayerActions = self.actionLayer.getActions()
-        "*** YOUR CODE HERE ***"
+        #TODO update the producers list!
+        add_props_dict = dict()
+        for action in currentLayerActions:
+            for add_props in action.getAdd():
+                        
+
+
+
+
 
     def updateMutexProposition(self):
         """
