@@ -107,7 +107,26 @@ def maxLevel(state, problem):
     pgInit = PlanGraphLevel()                   #create a new plan graph level (level is the action layer and the propositions layer)
     pgInit.setPropositionLayer(propLayerInit)   #update the new plan graph level with the the proposition layer
     """
-    "*** YOUR CODE HERE ***"
+
+    level = 0
+    graph=[]
+
+    initial_prop_layer = PropositionLayer()
+    for prop in state:
+        initial_prop_layer.addProposition(prop)
+
+    curr_graph_level = PlanGraphLevel()
+    curr_graph_level.setPropositionLayer(initial_prop_layer)
+    graph.append(curr_graph_level)
+
+    while not problem.isGoalState(curr_graph_level.getPropositionLayer().getPropositions()):
+        if isFixed(graph, level):
+            return float('inf')
+        level += 1
+        curr_graph_level = curr_graph_level.expandWithoutMutex(curr_graph_level.getPropositionLayer())
+        graph.append(curr_graph_level)
+
+    return level
 
 
 def levelSum(state, problem):
@@ -115,7 +134,8 @@ def levelSum(state, problem):
     The heuristic value is the sum of sub-goals level they first appeared.
     If the goal is not reachable from the state your heuristic should return float('inf')
     """
-    "*** YOUR CODE HERE ***"
+
+
 
 
 def isFixed(Graph, level):
