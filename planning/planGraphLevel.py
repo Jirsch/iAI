@@ -67,7 +67,7 @@ class PlanGraphLevel(object):
                     not self.check_pre_mutex(action, previousPropositionLayer):
                 self.actionLayer.addAction(action)
 
-
+    #TODO could be changed by another helper function i completed?
     def check_pre_mutex(self, action, previous_proposition_layer):
         for pre1 in action.getPre():
             for pre2 in action.getPre():
@@ -137,7 +137,13 @@ class PlanGraphLevel(object):
         """
         currentLayerPropositions = self.propositionLayer.getPropositions()
         currentLayerMutexActions = self.actionLayer.getMutexActions()
-        "*** YOUR CODE HERE ***"
+        for prop1 in currentLayerPropositions:
+            for prop2 in currentLayerPropositions:
+                if mutexPropositions(prop1, prop2,currentLayerMutexActions)and\
+                        prop1 != prop2:
+                    self.propositionLayer.addMutexProp(prop1, prop2)
+
+
 
     def expand(self, previousLayer):
         """
@@ -151,7 +157,13 @@ class PlanGraphLevel(object):
         previousPropositionLayer = previousLayer.getPropositionLayer()
         previousLayerMutexProposition = previousPropositionLayer.getMutexProps()
 
-        "*** YOUR CODE HERE ***"
+        self.setIndependentActions(previousLayer.independentActions)
+        #TODO check if i need to set the independent stuff (above)
+        self.updateActionLayer(previousPropositionLayer)
+        self.updateMutexActions(previousLayerMutexProposition)
+
+        self.updatePropositionLayer()
+        self.updateMutexProposition()
 
     def expandWithoutMutex(self, previousLayer):
         """
