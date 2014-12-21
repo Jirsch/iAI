@@ -109,7 +109,7 @@ def maxLevel(state, problem):
     """
 
     level = 0
-    graph=[]
+    graph = []
 
     initial_prop_layer = PropositionLayer()
     for prop in state:
@@ -135,7 +135,33 @@ def levelSum(state, problem):
     If the goal is not reachable from the state your heuristic should return float('inf')
     """
 
+    level = 0
+    sum = 0
+    graph = []
+    goals = problem.goal
 
+    initial_prop_layer = PropositionLayer()
+    for prop in state:
+        initial_prop_layer.addProposition(prop)
+
+    curr_graph_level = PlanGraphLevel()
+    curr_graph_level.setPropositionLayer(initial_prop_layer)
+    graph.append(curr_graph_level)
+
+    while len(goals) > 0:
+        if isFixed(graph, level):
+            return float('inf')
+
+        for goal in goals:
+            if goal in curr_graph_level.getPropositionLayer().getPropositions():
+                sum += level
+                goals.remove(goal)
+
+        level += 1
+        curr_graph_level = curr_graph_level.expandWithoutMutex(curr_graph_level.getPropositionLayer())
+        graph.append(curr_graph_level)
+
+    return sum
 
 
 def isFixed(Graph, level):
@@ -184,4 +210,3 @@ if __name__ == '__main__':
     else:
         print("Could not find a plan in %.2f seconds" % elapsed)
     print("Search nodes expanded: %d" % prob._expanded)
- 
