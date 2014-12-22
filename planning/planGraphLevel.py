@@ -147,8 +147,6 @@ class PlanGraphLevel(object):
         previousPropositionLayer = previousLayer.getPropositionLayer()
         previousLayerMutexProposition = previousPropositionLayer.getMutexProps()
 
-        #self.setIndependentActions(previousLayer.independentActions)
-        #TODO check if i need to set the independent stuff (above)
         self.updateActionLayer(previousPropositionLayer)
         self.updateMutexActions(previousLayerMutexProposition)
 
@@ -160,8 +158,12 @@ class PlanGraphLevel(object):
         Questions 11 and 12
         You don't have to use this function
         """
-        previousLayerProposition = previousLayer.getPropositionLayer()
-        "*** YOUR CODE HERE ***"
+
+        previousPropositionLayer = previousLayer.getPropositionLayer()
+
+        self.updateActionLayer(previousPropositionLayer)
+
+        self.updatePropositionLayer()
 
 
 def mutexActions(a1, a2, mutexProps):
