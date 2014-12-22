@@ -211,10 +211,6 @@ def mutexPropositions(prop1, prop2, mutexActions):
     You might want to use this function:
     prop1.getProducers() returns the list of all the possible actions in the layer that have prop1 on their add list
     """
-    if prop1.getProducers() is None:
-        a=1
-    if prop2.getProducers() is None:
-        a=9
 
     for action_1 in prop1.getProducers():
         for action_2 in prop2.getProducers():
