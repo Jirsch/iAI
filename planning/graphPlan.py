@@ -231,6 +231,18 @@ def independentPair(a1, a2):
     a1.isPosEffect(p) returns true is p is in a1.getAdd()
     a1.isNegEffect(p) returns true is p is in a1.getDel()
     """
+    pair = a1, a2
+    for i in range(2):
+        for pre in pair[0].getPre():
+            if pair[1].isNegEffect(pre):
+                return False
+
+        for added in pair[0].getAdd():
+            if pair[1].isNegEffect(added):
+                return False
+        pair = a2, a1
+
+    return True
 
 
 if __name__ == '__main__':
