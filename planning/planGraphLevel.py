@@ -64,18 +64,8 @@ class PlanGraphLevel(object):
 
         for action in allActions:
             if previousPropositionLayer.allPrecondsInLayer(action) and\
-                    not self.contains_pairwise_mutex(action, previousPropositionLayer):
+                    not pre_contains_pairwise_mutex(action, previousPropositionLayer):
                 self.actionLayer.addAction(action)
-
-    #TODO could be changed by another helper function i completed?
-    def contains_pairwise_mutex(self, action, previous_proposition_layer):
-        for pre1 in action.getPre():
-            for pre2 in action.getPre():
-                if pre1 != pre2 and\
-                        previous_proposition_layer.isMutex(pre1, pre2):
-                    return True
-        return False
-
 
     def updateMutexActions(self, previousLayerMutexProposition):
         """
@@ -201,6 +191,14 @@ def haveCompetingNeeds(a1, a2, mutexProps):
 
     return False
 
+
+def pre_contains_pairwise_mutex(action, previous_proposition_layer):
+    for pre1 in action.getPre():
+        for pre2 in action.getPre():
+            if pre1 != pre2 and\
+                    previous_proposition_layer.isMutex(pre1, pre2):
+                return True
+    return False
 
 
 def mutexPropositions(prop1, prop2, mutexActions):
