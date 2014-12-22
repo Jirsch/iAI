@@ -119,12 +119,13 @@ def maxLevel(state, problem):
     curr_graph_level.setPropositionLayer(initial_prop_layer)
     graph.append(curr_graph_level)
 
-    while not problem.isGoalState(curr_graph_level.getPropositionLayer().getPropositions()):
+    while not problem.isGoalState(graph[level].getPropositionLayer().getPropositions()):
         if isFixed(graph, level):
             return float('inf')
         level += 1
-        curr_graph_level = curr_graph_level.expandWithoutMutex(curr_graph_level.getPropositionLayer())
-        graph.append(curr_graph_level)
+        next_level = PlanGraphLevel()
+        next_level.expandWithoutMutex(graph[level-1])
+        graph.append(next_level)
 
     return level
 
@@ -138,28 +139,29 @@ def levelSum(state, problem):
     level = 0
     sum = 0
     graph = []
-    goals = problem.goal
+    goals = [goal for goal in problem.goal]
 
     initial_prop_layer = PropositionLayer()
     for prop in state:
         initial_prop_layer.addProposition(prop)
 
-    curr_graph_level = PlanGraphLevel()
-    curr_graph_level.setPropositionLayer(initial_prop_layer)
-    graph.append(curr_graph_level)
+    initial_level = PlanGraphLevel()
+    initial_level.setPropositionLayer(initial_prop_layer)
+    graph.append(initial_level)
 
     while len(goals) > 0:
         if isFixed(graph, level):
             return float('inf')
 
         for goal in goals:
-            if goal in curr_graph_level.getPropositionLayer().getPropositions():
+            if goal in graph[level].getPropositionLayer().getPropositions():
                 sum += level
                 goals.remove(goal)
 
         level += 1
-        curr_graph_level = curr_graph_level.expandWithoutMutex(curr_graph_level.getPropositionLayer())
-        graph.append(curr_graph_level)
+        next_level = PlanGraphLevel()
+        next_level.expandWithoutMutex(graph[level-1])
+        graph.append(next_level)
 
     return sum
 
