@@ -233,6 +233,10 @@ def independentPair(a1, a2):
     """
     pair = a1, a2
     for i in range(2):
+        for neg in pair[0].getDelete():
+            if pair[1].isPreCond(neg) or pair[1].isPosEffect(neg):
+                return False
+        """
         for pre in pair[0].getPre():
             if pair[1].isNegEffect(pre):
                 return False
@@ -240,6 +244,7 @@ def independentPair(a1, a2):
         for added in pair[0].getAdd():
             if pair[1].isNegEffect(added):
                 return False
+        """
         pair = a2, a1
 
     return True

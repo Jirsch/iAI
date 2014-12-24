@@ -79,11 +79,18 @@ class PlanGraphLevel(object):
         """
         currentLayerActions = self.actionLayer.getActions()
 
+        for first_idx in range(len(currentLayerActions)):
+            first = currentLayerActions[first_idx]
+            for second in currentLayerActions[first_idx+1:len(currentLayerActions)]:
+                if mutexActions(first, second, previousLayerMutexProposition):
+                    self.actionLayer.addMutexActions(first,second)
+        """
         for action1 in currentLayerActions:
                 for action2 in currentLayerActions:
                     if action1 != action2 and\
                             mutexActions(action1, action2, previousLayerMutexProposition):
                         self.actionLayer.addMutexActions(action1, action2)
+        """
 
 
 
@@ -127,11 +134,19 @@ class PlanGraphLevel(object):
         """
         currentLayerPropositions = self.propositionLayer.getPropositions()
         currentLayerMutexActions = self.actionLayer.getMutexActions()
+
+        for first_idx in range(len(currentLayerPropositions)):
+            first = currentLayerPropositions[first_idx]
+            for second in currentLayerPropositions[first_idx+1:len(currentLayerPropositions)]:
+                if first != second and mutexPropositions(first, second, currentLayerMutexActions):
+                    self.propositionLayer.addMutexProp(first, second)
+        """
         for prop1 in currentLayerPropositions:
             for prop2 in currentLayerPropositions:
                 if mutexPropositions(prop1, prop2, currentLayerMutexActions) \
                         and prop1 != prop2:
                     self.propositionLayer.addMutexProp(prop1, prop2)
+        """
 
 
 
