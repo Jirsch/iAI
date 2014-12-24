@@ -2,7 +2,5 @@
 **/.idea/
 **/.iws
 **/__pycache__/
-**/__pycache__/**.pyc
-**/*.py[cod]
 search/lior-expirament.py
 multi_agent/lior-expirament.py
