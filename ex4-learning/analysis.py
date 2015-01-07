@@ -6,7 +6,7 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
-######################
+# #####################
 # ANALYSIS QUESTIONS #
 ######################
 
@@ -14,54 +14,69 @@
 # value iteration.
 
 def question2():
-  answerDiscount = 0.9
-  answerNoise = 0.2
-  return answerDiscount, answerNoise
+    #removing noise made it worth while to cross the bridge,once it was
+    # relatively safe(less option for falling) the agent crossed
+    answerDiscount = 0.9
+    answerNoise = 0.01
+    return answerDiscount, answerNoise
+
 
 def question3a():
-  answerDiscount = 0.9
-  answerNoise = 0.2
-  answerLivingReward = 0.0
-  return answerDiscount, answerNoise, answerLivingReward
-  # If not possible, return 'NOT POSSIBLE'
+    #discount is bigger, living reward negative,noise reduced
+    answerDiscount = 0.4
+    answerNoise = 0.01
+    answerLivingReward = -1.0
+    return answerDiscount, answerNoise, answerLivingReward
+    # If not possible, return 'NOT POSSIBLE'
+
 
 def question3b():
-  answerDiscount = 0.9
-  answerNoise = 0.2
-  answerLivingReward = 0.0
-  return answerDiscount, answerNoise, answerLivingReward
-  # If not possible, return 'NOT POSSIBLE'
+    #discount is bigger, living reward negative
+    answerDiscount = 0.4
+    answerNoise = 0.2
+    answerLivingReward = -1.0
+    return answerDiscount, answerNoise, answerLivingReward
+    # If not possible, return 'NOT POSSIBLE'
+
 
 def question3c():
-  answerDiscount = 0.9
-  answerNoise = 0.2
-  answerLivingReward = 0.0
-  return answerDiscount, answerNoise, answerLivingReward
-  # If not possible, return 'NOT POSSIBLE'
+    #noise is lower
+    answerDiscount = 0.9
+    answerNoise = 0.01
+    answerLivingReward = 0.0
+    return answerDiscount, answerNoise, answerLivingReward
+    # If not possible, return 'NOT POSSIBLE'
+
 
 def question3d():
-  answerDiscount = 0.9
-  answerNoise = 0.2
-  answerLivingReward = 0.0
-  return answerDiscount, answerNoise, answerLivingReward
-  # If not possible, return 'NOT POSSIBLE'
+    #original values
+    answerDiscount = 0.9
+    answerNoise = 0.2
+    answerLivingReward = 0.0
+    return answerDiscount, answerNoise, answerLivingReward
+    # If not possible, return 'NOT POSSIBLE'
+
 
 def question3e():
-  answerDiscount = 0.9
-  answerNoise = 0.2
-  answerLivingReward = 0.0
-  return answerDiscount, answerNoise, answerLivingReward
-  # If not possible, return 'NOT POSSIBLE'
+    #living reward is higher
+    answerDiscount = 0.9
+    answerNoise = 0.2
+    answerLivingReward = 1.0
+    return answerDiscount, answerNoise, answerLivingReward
+    # If not possible, return 'NOT POSSIBLE'
+
 
 def question6():
-  answerEpsilon = None
-  answerLearningRate = None
-  return answerEpsilon, answerLearningRate
-  # If not possible, return 'NOT POSSIBLE'
-  
+    answerEpsilon = None
+    answerLearningRate = None
+    return answerEpsilon, answerLearningRate
+    # If not possible, return 'NOT POSSIBLE'
+
+
 if __name__ == '__main__':
-  print('Answers to analysis questions:')
-  import analysis
-  for q in [q for q in dir(analysis) if q.startswith('question')]:
-    response = getattr(analysis, q)()
-    print('Question %s:\t%s' % (q, str(response)))
+    print('Answers to analysis questions:')
+    import analysis
+
+    for q in [q for q in dir(analysis) if q.startswith('question')]:
+        response = getattr(analysis, q)()
+        print('Question %s:\t%s' % (q, str(response)))
