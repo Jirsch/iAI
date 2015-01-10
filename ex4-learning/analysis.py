@@ -6,7 +6,7 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
-# #####################
+######################
 # ANALYSIS QUESTIONS #
 ######################
 
@@ -67,10 +67,12 @@ def question3e():
 
 
 def question6():
+    """
     answerEpsilon = None
     answerLearningRate = None
     return answerEpsilon, answerLearningRate
-    # If not possible, return 'NOT POSSIBLE'
+    """
+    return 'NOT POSSIBLE'
 
 
 if __name__ == '__main__':
