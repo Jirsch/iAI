@@ -14,36 +14,42 @@
 # value iteration.
 
 def question2():
+    #removing noise made it worth while to cross the bridge,once it was
+    # relatively safe(less option for falling) the agent crossed
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.01
     return answerDiscount, answerNoise
 
 
 def question3a():
-    answerDiscount = 0.9
-    answerNoise = 0.2
-    answerLivingReward = 0.0
+    #discount is bigger, living reward negative,noise reduced
+    answerDiscount = 0.4
+    answerNoise = 0.01
+    answerLivingReward = -1.0
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 
 def question3b():
-    answerDiscount = 0.9
+    #discount is bigger, living reward negative
+    answerDiscount = 0.4
     answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerLivingReward = -1.0
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 
 def question3c():
+    #noise is lower
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.01
     answerLivingReward = 0.0
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 
 def question3d():
+    #original values
     answerDiscount = 0.9
     answerNoise = 0.2
     answerLivingReward = 0.0
@@ -52,9 +58,10 @@ def question3d():
 
 
 def question3e():
+    #living reward is higher
     answerDiscount = 0.9
     answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerLivingReward = 1.0
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
